@@ -5,7 +5,7 @@ const twitterBtn = document.getElementById('twitter');
 const newQuoteBtn = document.getElementById('new-quote');
 const loader = document.getElementById('loader');
 
-// Show Loading
+//Show Loading
 function loading() {
     loader.hidden = false;
     quoteContainer.hidden = true;
@@ -20,32 +20,37 @@ function complete() {
 }
 
 // Get Quote From API
+// Get Quote From API
 async function getQuote() {
     loading();
-    const proxyUrl = 'https://cors-anywhere.herokuapp.com/'
-    const apiUrl = 'http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json';
+    const proxyUrl = 'https://api.allorigins.win/get?url=';
+    const apiUrl = encodeURIComponent('http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json');
     try {
         const response = await fetch(proxyUrl + apiUrl);
         const data = await response.json();
+        const quoteData = JSON.parse(data.contents); // Parse the contents to JSON
+        
         // If Author is blank, add 'Unknown'
-        if (data.quoteAuthor === '') {
+        if (quoteData.quoteAuthor === '') {
             authorText.innerText = 'Unknown';
         } else {
-            authorText.innerText = data.quoteAuthor;
+            authorText.innerText = quoteData.quoteAuthor;
         }
         // Reduce font size for long quotes
-        if (data.quoteText.length > 120) {
+        if (quoteData.quoteText.length > 120) {
             quoteText.classList.add('long-quote');
         } else {
             quoteText.classList.remove('long-quote');
         }
-        quoteText.innerText = data.quoteText;
+        quoteText.innerText = quoteData.quoteText;
         // Stop Loader, Show Quote
         complete();
     } catch (error) {
+        console.error('Error fetching quote: ', error);
         getQuote();
     }
 }
+
 
 // Tweet Quote
 function tweetQuote() {
